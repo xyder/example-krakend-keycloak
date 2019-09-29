@@ -3,9 +3,9 @@
 import uuid
 from dataclasses import asdict, dataclass
 
-import faker
 from aiohttp import web
 from aiohttp.web_exceptions import HTTPNotFound
+import faker
 
 
 @dataclass
@@ -124,7 +124,4 @@ def main():
     web.run_app(app, port=8400)
 
 if __name__ == '__main__':
-    # todo: test merging
-    # todo: test filtering
-    # todo: test sequential proxy
     main()
