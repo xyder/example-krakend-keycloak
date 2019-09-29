@@ -1,0 +1,58 @@
+version: '3.4'
+
+
+networks:
+  keycloak-net:
+
+volumes:
+  keycloak-db:
+
+services:
+  krakend:
+    image: devopsfaith/krakend:latest
+    container_name: krakend
+    command: run -d -c /etc/krakend/krakend.json
+    ports:
+      - "8402:8080"
+    volumes:
+      - ./data/krakend:/etc/krakend
+
+  krakend-designer:
+    image: devopsfaith/krakendesigner:latest
+    container_name: krakend-designer
+    ports:
+      - "8401:80"
+
+  keycloak-db:
+    image: postgres:latest
+    container_name: keycloak-db
+    user: root  # needed because windows hates me
+    volumes:
+      - keycloak-db:/var/lib/postgresql/data
+    networks:
+      - keycloak-net
+    ports:
+      - "25432:5432"
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+
+  keycloak:
+    image: jboss/keycloak:latest
+    container_name: keycloak
+    depends_on:
+      - keycloak-db
+    networks:
+      - keycloak-net
+    ports:
+      - "8403:8080"  # expose to host port 8403
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: keycloak-db
+      DB_PORT: 5432
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin

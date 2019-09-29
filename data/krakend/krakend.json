@@ -1,0 +1,118 @@
+{
+    "version": 2,
+    "extra_config": {
+        "github_com/devopsfaith/krakend-gologging": {
+            "level": "DEBUG",
+            "prefix": "[KRAKEND]",
+            "syslog": false,
+            "stdout": true,
+            "format": "default"
+        }
+    },
+    "timeout": "3000ms",
+    "cache_ttl": "300s",
+    "output_encoding": "json",
+    "name": "Test Service",
+    "endpoints": [
+        {
+            "endpoint": "/mock/parents/{id}",
+            "method": "GET",
+            "extra_config": {
+                "github.com/devopsfaith/krakend-jose/validator": {
+                    "alg": "RS256",
+                    "jwk-url": "http://host.docker.internal:8403/auth/realms/master/protocol/openid-connect/certs",
+                    "issuer": "http://localhost:8403/auth/realms/master",
+                    "disable_jwk_security": true
+                }
+            },
+            "output_encoding": "json",
+            "concurrent_calls": 1,
+            "backend": [
+                {
+                    "url_pattern": "/parents/{id}",
+                    "encoding": "json",
+                    "sd": "static",
+                    "extra_config": {},
+                    "host": [
+                        "host.docker.internal:8400"
+                    ],
+                    "disable_host_sanitize": false,
+                    "blacklist": [
+                        "super_secret_field"
+                    ]
+                },
+                {
+                    "url_pattern": "/siblings/{id}",
+                    "encoding": "json",
+                    "sd": "static",
+                    "extra_config": {},
+                    "host": [
+                        "host.docker.internal:8400"
+                    ],
+                    "blacklist": [
+                        "sibling_id"
+                    ],
+                    "group": "extra_info",
+                    "disable_host_sanitize": false
+                },
+                {
+                    "url_pattern": "/parents/{id}/children",
+                    "encoding": "json",
+                    "sd": "static",
+                    "extra_config": {},
+                    "host": [
+                        "host.docker.internal:8400"
+                    ],
+                    "disable_host_sanitize": false,
+                    "mapping": {
+                        "content": "cars"
+                    },
+                    "whitelist": [
+                        "content"
+                    ]
+                }
+            ]
+        },
+        {
+            "endpoint": "/mock/bogus-new-api/{path}",
+            "method": "GET",
+            "extra_config": {
+                "github.com/devopsfaith/krakend-jose/validator": {
+                    "alg": "RS256",
+                    "jwk-url": "http://host.docker.internal:8403/auth/realms/master/protocol/openid-connect/certs",
+                    "issuer": "http://localhost:8403/auth/realms/master",
+                    "disable_jwk_security": true
+                },
+                "github.com/devopsfaith/krakend/proxy": {
+                    "static": {
+                        "data": {
+                            "new_field_a": 123,
+                            "new_field_b": [
+                                "arr1",
+                                "arr2"
+                            ],
+                            "new_field_c": {
+                                "obj": "obj1"
+                            }
+                        },
+                        "strategy": "always"
+                    }
+                }
+            },
+            "output_encoding": "json",
+            "concurrent_calls": 1,
+            "backend": [
+                {
+                    "url_pattern": "/not-finished-yet",
+                    "encoding": "json",
+                    "sd": "static",
+                    "extra_config": {},
+                    "host": [
+                        "nothing-here"
+                    ],
+                    "disable_host_sanitize": false
+                }
+            ]
+        }
+    ]
+}
