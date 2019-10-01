@@ -102,7 +102,7 @@ Steps:
     - login with test-app/password on the popup login page
     - use the token to perform the request
 7. krakend is configured to forward the Authorization header; the application does a print-out of this header, and you can
-use [jwt.io](jwt.io) to decode it - it will contain info about the client (such as their role) that keycloak added
+use [http://jwt.io](http://jwt.io) to decode it - it will contain info about the client (such as their role) that keycloak added
 
 ## Disclaimer
 
