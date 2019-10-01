@@ -17,6 +17,9 @@
         {
             "endpoint": "/mock/parents/{id}",
             "method": "GET",
+            "headers_to_pass": [
+                "Authorization"
+            ],
             "extra_config": {
                 "github.com/devopsfaith/krakend-jose/validator": {
                     "alg": "RS256",

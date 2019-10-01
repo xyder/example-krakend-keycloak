@@ -1,4 +1,7 @@
 venv
 .vscode
+*.swp
 backup
 .history
+.python-version
+

@@ -47,31 +47,45 @@ pip install -r server/requirements.txt
 # run service
 python server/main.py
 ```
+The service should be available at http://0.0.0.0:8400 and exposes the following endpoints:
+```
+/parents
+/parents/{parent_id}
+/parents/{parent_id}/children
+/siblings
+/siblings/{sibling_id}
+/children
+/children/{child_id}
+```
 
 ### Configure minimal required settings for Keycloak JWT validation
 
 Notes:
 
 - Using [https://www.jerney.io/secure-apis-kong-keycloak-1/](https://www.jerney.io/secure-apis-kong-keycloak-1/) as reference
-- login using admin/admin
+- login using admin/admin at http://localhost:8403/auth/
 
 Steps:
 
-1. Client creation
+1. Client creation - select 'Clients' and hit 'Create'
     - client id: `krakend-api-gateway`
     - protocol: `openid-connect`
     - root url: `http://localhost:8402`
 2. Client configuration (after creation)
     - access type: `confidential`
     - go to Credentials and copy the Secret
-3. User creation:
+3. Create a role - select 'Roles' and hit 'Add Role'
+    - Role Name: `test-app-parent`
+4. User creation - select 'Users' and hit 'Add user'
     - username: `test-app`
     - email verified: `checked`
-4. User configuration (after creation)
+5. User configuration (after creation)
     - go to Credentials:
         - password: `password`
         - temporary: `unchecked`
-5. Get OAuth2 token using Postman:
+    - go to Role Mappings:
+        - add 'test-app-parent' to `Assigned Roles`
+6. Using Postman, create a new GET request to, say, localhost:8402/mock/parents/51768a34-938f-4309-923d-fe95251d23b6 and get an OAuth2 token to use with it:
     - Note: using info from [http://localhost:8403/auth/realms/master/.well-known/openid-configuration](http://localhost:8403/auth/realms/master/.well-known/openid-configuration)
     - select Auth Type to Oauth 2.0 and fill in the following:
         - token name: `keycloak-token`
@@ -86,7 +100,9 @@ Steps:
         - client authentication: `send client credentials in body`
     - request token
     - login with test-app/password on the popup login page
-    - use token to request localhost:8402/mock/* endpoints
+    - use the token to perform the request
+7. krakend is configured to forward the Authorization header; the application does a print-out of this header, and you can
+use [http://jwt.io](http://jwt.io) to decode it - it will contain info about the client (such as their role) that keycloak added
 
 ## Disclaimer
 
