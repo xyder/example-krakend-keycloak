@@ -88,6 +88,7 @@ def lister_getter(request, path_key, items_db):
 
 
 async def list_parents(request):
+    print(request.headers)
     return lister_getter(request, 'parent_id', database.parents)
 
 
